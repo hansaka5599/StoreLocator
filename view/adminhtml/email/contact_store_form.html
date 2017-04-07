@@ -1,0 +1,22 @@
+<!--
+/**
+ * Copyright © 2016 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<!--@subject {{trans "Store Contact Form"}} @-->
+<!--@vars {
+"var data.store":"Store",
+"var data.comment":"Message",
+"var data.email":"Sender Email",
+"var data.first_name":"Sender First Name",
+"var data.last_name":"Sender Last Name",
+"var data.telephone":"Sender Telephone"
+} @-->
+{{trans "Store: %store" store=$data.store}}
+{{trans "First Name: %first_name" first_name=$data.first_name}}
+{{trans "Last Name: %last_name" last_name=$data.last_name}}
+{{trans "Email: %email" email=$data.email}}
+{{trans "Phone Number: %telephone" telephone=$data.telephone}}
+
+{{trans "Message: %comment" comment=$data.comment}}

@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<!---
+/**
+ * Netstarter Pty Ltd.
+ *
+ * @category    CameraHouse
+ * @package     CameraHouse_StoreLocator
+ * @author      Netstarter Team <contact@netstarter.com>
+ * @copyright   Copyright (c) 2016 Netstarter Pty Ltd. (http://www.netstarter.com.au)
+ */
+ -->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="adminhtml.ch_store_events.grid.container">
+            <block class="Magento\Backend\Block\Widget\Grid" name="adminhtml.ch_store_events.item.grid" as="grid">
+                <arguments>
+                    <argument name="id" xsi:type="string">chEventsGrid</argument>
+                    <argument name="dataSource" xsi:type="object">CameraHouse\StoreLocator\Model\ResourceModel\Events\Collection</argument>
+                    <argument name="default_sort" xsi:type="string">event_id</argument>
+                    <argument name="default_dir" xsi:type="string">ASC</argument>
+                    <argument name="save_parameters_in_session" xsi:type="string">1</argument>
+                </arguments>
+                <block class="Magento\Backend\Block\Widget\Grid\ColumnSet"
+                       name="ch_store_events.adminhtml.block.item.columnSet" as="grid.columnSet">
+                    <arguments>
+                        <argument name="rowUrl" xsi:type="array">
+                            <item name="path" xsi:type="string">ch_store_locator/*/edit</item>
+                            <item name="extraParamsTemplate" xsi:type="array">
+                                <item name="event_id" xsi:type="string">getEventId</item>
+                            </item>
+                        </argument>
+                    </arguments>
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="event_id">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">ID</argument>
+                            <argument name="type" xsi:type="string">text</argument>
+                            <argument name="index" xsi:type="string">event_id</argument>
+                            <argument name="column_css_class" xsi:type="string">col-id</argument>
+                            <argument name="header_css_class" xsi:type="string">col-id</argument>
+                        </arguments>
+                    </block>
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="identifier">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">Identifier</argument>
+                            <argument name="index" xsi:type="string">identifier</argument>
+                            <argument name="type" xsi:type="string">text</argument>
+                            <argument name="filter_index" xsi:type="string">identifier</argument>
+                            <argument name="column_css_class" xsi:type="string">col-name</argument>
+                            <argument name="header_css_class" xsi:type="string">col-name</argument>
+                        </arguments>
+                    </block>
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="template">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">Content Heading</argument>
+                            <argument name="index" xsi:type="string">content_heading</argument>
+                            <argument name="type" xsi:type="string">text</argument>
+                            <argument name="filter_index" xsi:type="string">content_heading</argument>
+                            <argument name="column_css_class" xsi:type="string">col-name</argument>
+                            <argument name="header_css_class" xsi:type="string">col-name</argument>
+                        </arguments>
+                    </block>
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="store">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">Store Name</argument>
+                            <argument name="index" xsi:type="string">name</argument>
+                            <argument name="type" xsi:type="string">text</argument>
+                            <argument name="filter_index" xsi:type="string">name</argument>
+                            <argument name="column_css_class" xsi:type="string">col-name</argument>
+                            <argument name="header_css_class" xsi:type="string">col-name</argument>
+                        </arguments>
+                    </block>
+                    <block class="Magento\Backend\Block\Widget\Grid\Column" as="sort_order">
+                        <arguments>
+                            <argument name="header" xsi:type="string" translate="true">Sort Order</argument>
+                            <argument name="index" xsi:type="string">sort_order</argument>
+                            <argument name="type" xsi:type="string">text</argument>
+                        </arguments>
+                    </block>
+                </block>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

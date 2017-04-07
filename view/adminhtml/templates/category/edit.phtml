@@ -1,0 +1,502 @@
+<?php
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php
+/* @var $block \Magento\VersionsCms\Block\Adminhtml\Cms\Hierarchy\Edit\Form */
+?>
+<?php echo $block->getFormHtml() ?>
+<?php echo $block->getChildHtml('form_after'); ?>
+<?php if ($block->showSubCategoryLayer()): ?>
+    <?php $_treeNodes = $block->getNodesJson(); ?>
+    <div class="cms-hierarchy">
+        <div class="admin__page-section">
+            <div class="cms-hierarchy-tree">
+                <div class="admin__fieldset">
+                    <div id="tree-container" class="cms-tree tree x-tree"></div>
+                </div>
+            </div>
+
+            <div class="cms-hierarchy-node">
+                <div class="buttons-set">
+                    <?php echo $block->getTreeButtonsHtml(); ?>
+                    <?php /* @escapeNotVerified */
+                    echo $block->getPagePropertiesButtons(); ?>
+                </div>
+
+                <div id="node_prop_container" class="entry-edit form-inline">
+                    <fieldset class="admin__fieldset">
+                        <?php echo $block->getSubCategoryForm() ?>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        <script id="ie-deferred-loader" defer="defer" src=""></script>
+        <script>
+            require([
+                "jquery",
+                "uiRegistry",
+                "Magento_Ui/js/modal/confirm",
+                "validation",
+                "mage/mage",
+                "prototype",
+                "extjs/ext-tree-checkbox"
+            ], function (jQuery, registry, confirm) {
+
+                /**
+                 * Fix ext compatibility with prototype 1.6
+                 */
+                Ext.lib.Event.getTarget = function (e) {
+                    var ee = e.browserEvent || e;
+                    return ee.target ? Event.element(ee) : null;
+                };
+
+                function deleteCurrentHierarchy() {
+                    confirm({
+                        content: <?php /* @escapeNotVerified */ echo json_encode(__("Are you sure you want to delete current hierarchy?")); ?>,
+                        actions: {
+                            confirm: function () {
+                                document.location = '<?php /* @escapeNotVerified */ echo $block->getDeleteHierarchyUrl() ?>';
+                            }
+                        }
+                    });
+                }
+
+                hierarchyNodes = {
+                    nodes: <?php /* @escapeNotVerified */ echo $_treeNodes ?>,
+                    removedNodes: $A(),
+
+                    initialize: function () {
+                        this.increment = 0;
+                        this.pageIdentifiers = $H({});
+                        this.tree = new Ext.tree.TreePanel('tree-container', {
+                            animate: false,
+                            loader: false,
+                            enableDD: true,
+                            containerScroll: true,
+                            rootVisible: true,
+                            lines: true
+                        });
+                        this.treeRoot = new Ext.tree.TreeNode({
+                            text: '/',
+                            id: '_root',
+                            allowDrop: true,
+                            allowDrag: false,
+                            expanded: true,
+                            cls: 'category_node_root'
+                        });
+                        this.tree.setRootNode(this.treeRoot);
+                        this.createNodes();
+                        this.tree.addListener('click', this.onNodeClick.bind(this));
+                        this.tree.addListener('beforeappend', this.onNodeAppend.bind(this));
+                        this.tree.addListener('beforenodedrop', this.onNodeMove.bind(this));
+                        this.tree.render();
+                        this.treeRoot.select();
+                        this.onNodeClick(this.treeRoot);
+                        this.dataModification = false;
+                        this.lastChangedNode = null;
+                    },
+
+                    createNodes: function () {
+                        for (var i = 0, l = this.nodes.length; i < l; i++) {
+                            var cssClass = 'category_node';
+                            var node = new Ext.tree.TreeNode({
+                                id: this.nodes[i].node_id,
+                                text: this.nodes[i].name,
+                                identifier: this.nodes[i].identifier,
+                                text_content: this.nodes[i].text_content,
+                                category_icon_tile: this.nodes[i].category_icon_tile,
+                                cls: cssClass,
+                                expanded: false,
+                                allowDrop: true,
+                                allowDrag: true
+                            });
+
+                            if (parentNode = this.tree.getNodeById(this.nodes[i].parent_node_id)) {
+                                parentNode.appendChild(node);
+                            } else {
+                                this.treeRoot.appendChild(node);
+                            }
+                        }
+                    },
+
+                    onNodeClick: function (node) {
+                        if (node.id) {
+                            this.saveNodePage();
+                        }
+
+                        if (this.lastChangedNode) {
+                            this.lastChangedNode = null;
+                        }
+
+                        if (!node || node.id == '_root') {
+                            $('node_prop_container').hide();
+                            $('cancel_node_button').hide();
+                            $('save_node_button').hide();
+                            $('delete_node_button').hide();
+                            return;
+                        }
+                        $('node_prop_container').show();
+
+                        var isTreeNode = node.parentNode.id == '_root';
+                        $('node_id').value = node.id;
+
+                        jQuery('#node_id').addClass('validate-no-empty');
+                        var nodeValue = $('node_id').value,
+                            isNodeSaved = jQuery.validator.validateElement('#node_id')
+                                || (!isNaN(parseNumber(nodeValue)) && !/^\s+$/.test(parseNumber(nodeValue))),
+                            isStoreViewLevel = $('store') && $('store').value;
+                        jQuery('#node_id').removeClass('validate-no-empty');
+
+                        $('sub_cat_name').value = node.text;
+                        $('sub_cat_identifier').value = node.attributes.identifier;
+                        $('sub_cat_text_content').value = node.attributes.text_content;
+
+                        if ($('sub_cat_category_icon_tile')) {
+                            $('sub_cat_category_icon_tile').value = node.attributes.category_icon_tile;
+                        }
+
+
+                        this.nodePropReset();
+
+                        $('delete_node_button').show();
+                        $('cancel_node_button').hide();
+
+                        this.saveButton(false);
+                    },
+
+                    onNodeAppend: function (tree, parent, node) {
+                        if (!parent || !node) {
+                            return false;
+                        }
+                        return true;
+                    },
+
+                    onNodeMove: function (e) {
+                        if (e.point == "above" || e.point == "below") {
+                            return this.onNodeAppend(e.tree, e.target.parentNode, e.dropNode)
+                        }
+                    },
+
+                    collectChilds: function (node) {
+                        if (node.id == '_root') {
+                            this.treeData = new Hash();
+                        } else {
+                            var categoryId = $('category_id').value;
+                            var data = {
+                                node_id: node.id,
+                                parent_node_id: node.parentNode.id == '_root' ? null : node.parentNode.id,
+                                category_id: categoryId,
+                                name: node.attributes.text,
+                                identifier: node.attributes.identifier,
+                                text_content: node.attributes.text_content,
+                                category_icon_tile: node.attributes.category_icon_tile,
+                                sort_order: node.parentNode.indexOf(node),
+                                level: node.getDepth()
+                            };
+
+                            this.treeData.set(node.id, data);
+                        }
+                        if (node.hasChildNodes()) {
+                            node.eachChild(this.collectChilds.bind(this));
+                        }
+                    },
+
+                    save: function (returnBack) {
+                        if (this.saveNodePage() == false) {
+                            return;
+                        }
+
+                        this.collectChilds(this.treeRoot);
+                        $('nodes_data').value = Object.toJSON(this.treeData);
+                        $('removed_nodes').value = this.removedNodes.join(',');
+                        if (returnBack) {
+                            jQuery('#edit_form').triggerHandler('saveAndContinueEdit');
+                        } else {
+                            jQuery('#edit_form').triggerHandler('save');
+                        }
+                    },
+
+                    nodePropValidate: function () {
+                        $('sub_cat_name').addClassName('required-entry');
+                        var isValid = jQuery('#edit_sub_category_form').mage('validation').valid();
+                        $('sub_cat_name').removeClassName('required-entry');
+                        return isValid;
+                    },
+
+                    nodePropReset: function () {
+                        jQuery('#edit_form')
+                            .mage('validation')
+                            .validation('clearError');
+                    },
+
+                    _changeNodePropShow: function (hasPageId) {
+                        var nodeElements = ['sub_cat_name', 'sub_cat_identifier', 'sub_cat_text_content', 'sub_cat_category_icon_tile'];
+                        nodeElements.each(function (id) {
+                            if ($(id)) {
+                                $(id).value = '';
+                            }
+                        });
+                    },
+
+                    newNodePage: function () {
+                        if ($('new_node_button').hasClassName('disabled') || this.saveNodePage() === false) {
+                            return false;
+                        }
+
+                        this.nodePropReset();
+                        $('node_id').value = '';
+                        this._changeNodePropShow(false);
+                        this.saveButton(true, true, true);
+
+                        $('delete_node_button').hide();
+                        $('node_prop_container').show();
+                        $('cancel_node_button').show();
+                    },
+
+                    cancelNodePage: function () {
+                        if ($('cancel_node_button').hasClassName('disabled')) {
+                            return false;
+                        }
+                        this.saveButton(false);
+                        var selectedNode = this.tree.getSelectionModel().getSelectedNode();
+                        if (selectedNode && selectedNode.id != '_root') {
+                            this.tree.getSelectionModel().clearSelections();
+                            selectedNode.select();
+                        } else {
+                            $('cancel_node_button').hide();
+                            $('node_prop_container').hide();
+                        }
+                        this.dataModification = false;
+                    },
+
+                    saveNodePage: function () {
+                        if (!this.dataModification) {
+                            return;
+                        } else {
+                            this.updateNodeEditRemove();
+                        }
+
+
+                        if (!$('save_node_button').hasClassName('disabled')) {
+                            return;
+                        } else {
+                            this.updateNodeEditRemove();
+                        }
+
+                    },
+
+                    updateNodeEditRemove: function () {
+
+                        var hasNodeId = $('node_id').value != '';
+
+                        if (!this.nodePropValidate()) {
+                            return false;
+                        }
+
+                        if (hasNodeId) {
+                            var node_id = $('node_id').value,
+                                node = this.tree.getNodeById(node_id),
+                                identifier = $('sub_cat_identifier').value;
+                            node.setText($('sub_cat_name').value);
+                            for (var i = 0, l = node.parentNode.childNodes.length; i < l; i++) {
+                                var comparedNode = node.parentNode.childNodes[i];
+                                if (comparedNode.id != node_id && identifier == comparedNode.attributes.identifier) {
+                                    alert('<?php /* @escapeNotVerified */ echo $block->escapeJsQuote(__('This URL key is already in use.'))?>');
+                                    return false;
+                                }
+                            }
+                            node.attributes.identifier = identifier;
+                            node.attributes.text_content = $('sub_cat_text_content').value;
+                            node.attributes.category_icon_tile = $('sub_cat_category_icon_tile') ? $('sub_cat_category_icon_tile').value : '';
+
+                        } else {
+                            var node = new Ext.tree.TreeNode({
+                                id: '_' + this.increment,
+                                text: $('sub_cat_name').value,
+                                identifier: $('sub_cat_identifier').value,
+                                text_content: $('sub_cat_text_content').value,
+                                category_icon_tile: $('sub_cat_category_icon_tile') ? $('sub_cat_category_icon_tile').value : '',
+                                page_id: null,
+                                cls: 'cms_node',
+                                expanded: true,
+                                allowDrop: true,
+                                allowDrag: true
+                            });
+
+                            this.increment++;
+                            var parentNode = this.tree.getSelectionModel().getSelectedNode();
+
+                            if (!parentNode) {
+                                parentNode = this.treeRoot;
+                            }
+                            parentNode.appendChild(node);
+                            parentNode.expand();
+                        }
+
+                        node.getUI().addClass('cms-saved');
+                        this.dataModification = false;
+
+                        if (!hasNodeId) {
+                            node.select();
+                        }
+                        this.saveButton(false);
+
+                    },
+
+                    deleteNodePage: function () {
+                        if ($('delete_node_button').hasClassName('disabled')) {
+                            return false;
+                        }
+                        if (!$('node_id').value) {
+                            return;
+                        }
+                        var node = this.tree.getNodeById($('node_id').value);
+                        if (node) {
+                            if (node.attributes.page_id) {
+                                this.pageIdentifiers.unset(node.attributes.identifier);
+                            }
+                            node.parentNode.select();
+                            node.parentNode.removeChild(node);
+
+                            if (!isNaN(node.id * 1)) {
+                                this.removedNodes.push(node.id);
+                            }
+                        }
+                    },
+
+                    checkCheckboxes: function (grid, element, checked) {
+                        if (element.disabled) {
+                            element.checked = false;
+                        }
+                    },
+
+                    hideFieldSet: function (id) {
+                        $(id).hide();
+                    },
+
+                    showFieldSet: function (id) {
+                        $(id).show();
+                    },
+
+                    resetFieldSet: function (id) {
+                        var elems = Element.select(id, ['select', 'input', 'textarea']);
+                        elems.each(function (elem) {
+                            if ($(elem).tagName.toLowerCase() == 'select') {
+                                $(elem).selectedIndex = 0;
+                            } else {
+                                $(elem).value = '';
+                            }
+                        });
+                    },
+
+                    saveButton: function (show, enabled, save) {
+                        var btn = $('save_node_button');
+                        if (show) {
+                            btn.show();
+                            btn.disabled = !enabled;
+                            if (enabled) {
+                                btn.removeClassName('disabled');
+                            } else {
+                                btn.addClassName('disabled');
+                            }
+
+                            if (save != undefined) {
+                                if (save) {
+                                    btn.down().update('<?php /* @escapeNotVerified */ echo $block->getButtonSaveLabel() ?>');
+                                } else {
+                                    btn.down().update('<?php /* @escapeNotVerified */ echo $block->getButtonUpdateLabel() ?>');
+                                }
+                            }
+                        } else {
+                            btn.hide();
+                        }
+                    },
+
+                    nodeChanged: function () {
+//                        debugger;
+                        var node = this.tree.getSelectionModel().getSelectedNode();
+                        if (node.id != '_root') {
+                            node.getUI().addClass('modified');
+                            this.lastChangedNode = node;
+                        }
+                        this.dataModification = true;
+                        if (!$('node_id').value) {
+                            this.saveButton(true, true);
+                        }
+                        jQuery('#edit_form').valid();
+                        url = jQuery('#sub_cat_identifier').val();
+                        if (url) {
+                            if (!this.validateUrlKey(url)) {
+                                alert("Invalid Url Key");
+                                jQuery('#sub_cat_identifier-error').focus();
+                            }
+                        }
+
+
+                    },
+
+                    validateUrlKey: function (url) {
+                        var re = /^[a-z0-9][a-z0-9_\/-]+(\.[a-z0-9_-]+)?$/;
+                        if (!re.test(url)) {
+                            return false;
+                        }
+                        return true;
+                    },
+
+                    toggleFieldset: function (switcher, container, hidden) {
+                        var elems = Element.select(container, ['select', 'input', 'textarea', 'button']);
+                        elems.each(function (elem) {
+                            if (elem != switcher) {
+                                hidden ? elem.up(1).hide() : elem.up(1).show();
+                            }
+                        });
+                    },
+
+                    addOptionToSelect: function (selectId, optionValue, optionText) {
+                        // select element not found
+                        if ($(selectId) == undefined) {
+                            return false;
+                        }
+                        // option already exists
+                        if ($(selectId).down('option[value="' + optionValue + '"]') != undefined) {
+                            return false;
+                        }
+
+                        var selected = $(selectId).value;
+
+                        var option = new Element('option', {'value': optionValue}).update(optionText);
+                        $(selectId).appendChild(option);
+
+                        // restore select value after insertion
+                        $(selectId).value = selected;
+                    },
+
+                    removeOptionFromSelect: function (selectId, optionValue) {
+                        var option = $(selectId).down('option[value="' + optionValue + '"]');
+                        // option doesn't exist
+                        if (option == undefined) {
+                            return false;
+                        }
+                        option.remove();
+                    }
+                };
+
+                window.deleteCurrentHierarchy = deleteCurrentHierarchy;
+                Ext.onReady(hierarchyNodes.initialize.bind(hierarchyNodes));
+                registry.set('hierarchyNodes', hierarchyNodes);
+            });
+        </script>
+    </div>
+<?php else: ?>
+    <div class="messages">
+        <div class="message message-info info">
+            <?php echo __('In order to display the Category Node panel, please create the category first either by clicking "Save" or "Save and Continue Edit" button') ?>
+        </div>
+    </div>
+<?php endif; ?>

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ *
+ * @category    CameraHouse
+ * @package     CameraHouse_StoreLocator
+ * @author      Netstarter Team <contact@netstarter.com>
+ * @copyright   Copyright (c) 2015 Netstarter Pty Ltd. (http://www.netstarter.com.au)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <preference for="Netstarter\StoreLocator\Controller\Adminhtml\Store\Save"
+                type="CameraHouse\StoreLocator\Controller\Adminhtml\Store\Save"/>
+    <preference for="Netstarter\StoreLocator\Block\Adminhtml\Store\Edit"
+                type="CameraHouse\StoreLocator\Block\Adminhtml\Store\Edit"/>
+    <preference for="Netstarter\StoreLocator\Block\Adminhtml\Store\Edit\Tab\Info"
+                type="CameraHouse\StoreLocator\Block\Adminhtml\Store\Edit\Tab\Info"/>
+    <preference for="Netstarter\StoreLocator\Block\Adminhtml\Store\Edit\Tab\Page"
+                type="CameraHouse\StoreLocator\Block\Adminhtml\Store\Edit\Tab\Page"/>
+    <preference for="Netstarter\StoreLocator\Block\Adminhtml\Category\Edit\Form"
+                type="CameraHouse\StoreLocator\Block\Adminhtml\Category\Edit\Form"/>
+    <preference for="Netstarter\StoreLocator\Controller\Adminhtml\Store\NewAction"
+                type="CameraHouse\StoreLocator\Controller\Adminhtml\Store\NewAction"/>
+    <type name="Netstarter\StoreLocator\Controller\Adminhtml\Category\Save">
+        <plugin name="camera_house_store_locator_controller_admin_category_save"
+                type="CameraHouse\StoreLocator\Controller\Adminhtml\Category\Save" sortOrder="100"/>
+    </type>
+
+    <type name="Netstarter\StoreLocator\Controller\Adminhtml\Category\Window\Save">
+        <plugin name="camera_house_store_locator_controller_admin_category_window_save"
+                type="CameraHouse\StoreLocator\Controller\Adminhtml\Category\Window\Save" sortOrder="100"/>
+    </type>
+</config>

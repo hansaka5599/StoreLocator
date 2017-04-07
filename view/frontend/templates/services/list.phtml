@@ -1,0 +1,64 @@
+<?php
+/**
+ * Netstarter Pty Ltd.
+ *
+ * @category    CameraHouse
+ * @package     CameraHouse_BrandPromo
+ * @author      Netstarter Team <contact@netstarter.com>
+ * @copyright   Copyright (c) 2016 Netstarter Pty Ltd. (http://www.netstarter.com.au)
+ */
+$services = $block->getServices();
+$storeData = $block->getStoreData();
+?>
+<div class="store-service-content">
+    <?php
+    echo $block->getServiceContent();
+    ?>
+</div>
+<?php if ($services): ?>
+    <div class="services-tiles">
+
+        <?php $i = 0; ?>
+        <?php foreach ($services as $service): ?>
+            <?php $i++; ?>
+            <div class="service-item <?php echo "item-col-" . $i ?>">
+                <div class="service-image">
+                    <?php
+                    $images = json_decode($service->getCategoryIconTile(), true);
+                    $tileImage = $images[0];
+                    ?>
+                    <?php if ($service->getDedicatedPage()) : ?>
+                    <a href="<?php echo $block->getServiceUrl(
+                        \Netstarter\StoreLocator\Model\Store::URL_PREFIX
+                        . "/" . $storeData['url_key'] . "/" . $service->getIdentifier()
+                    ); ?>">
+                        <?php endif ?>
+
+                        <img src="<?php echo $block->getImageUrl($tileImage['path']) ?>"
+                             alt="<?php echo __($service->getName()) ?>"/>
+
+                        <?php if ($service->getDedicatedPage()) : ?>
+                    </a>
+                <?php endif ?>
+                </div>
+                <div class="service-name">
+                    <?php if ($service->getDedicatedPage()) : ?>
+                    <a href="<?php echo $block->getServiceUrl(
+                        \Netstarter\StoreLocator\Model\Store::URL_PREFIX . "/" .
+                        $storeData['url_key'] . "/" . $service->getIdentifier()); ?>">
+                        <?php endif ?>
+                        <?php echo __($service->getName()) ?>
+                        <?php if ($service->getDedicatedPage()) : ?>
+                    </a>
+                <?php endif ?>
+                </div>
+            </div>
+            <?php
+            if ($i == 4) :
+                $i = 0;
+            endif
+            ?>
+        <?php endforeach; ?>
+
+    </div>
+<?php endif; ?>

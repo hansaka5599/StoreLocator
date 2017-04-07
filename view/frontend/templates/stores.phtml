@@ -1,0 +1,126 @@
+<?php
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+<div class="store-locator-main">
+    <div class="store-locator-heading" style="position: relative">
+        <h1><?php echo __('Find a Store') ?></h1>
+        <div class="store-locator-heading-content">
+            <span class="suburb-postcode-label"><?php echo __('Enter postcode or suburb') ?></span>
+            <div class="suburb-postcode-container">
+                <input id="suburb-postcode-txt" type="text" autocomplete="off" spellcheck="false">
+            </div>
+            <div class="seperator-elemant"> <?php echo __('Or') ?> </div>
+            <button class="action primary-xsmall" id="current-location-btn">
+                <span><?php echo __('Use my location') ?></span></button>
+        </div>
+    </div>
+
+    <div class="store-locator-content">
+        <div class="store-locator-content-left">
+            <?php $_categories = $block->getCategories() ?>
+            <?php if (!empty($_categories)): ?>
+                <div class="store-categories">
+                    <ul class="clearfix">
+                        <?php foreach ($_categories as $_category): ?>
+                            <?php $_linkType = (int)$_category->getLinkType(); ?>
+                            <?php $_nodes = $_category->getNodes() ?>
+                            <?php if (!empty($_nodes)): ?>
+                                <li>
+                                    <div class="heading open"><?php echo $_category->getTitle() ?></div>
+                                    <?php $_categoryUrlPrefix = \Netstarter\StoreLocator\Model\Category::URL_PREFIX; ?>
+                                    <div class="service-wrapper">
+                                        <ul class="category-nodes">
+                                            <?php foreach ($_nodes as $_node): ?>
+                                                <?php if ($_linkType === 0): ?>
+                                                    <li>
+                                                        <a href="/<?php echo $_categoryUrlPrefix . '/' . $_node->getRequestUrl() ?>">
+                                                            <?php echo $_node->getName() ?>
+                                                        </a>
+                                                    </li>
+                                                <?php elseif ($_linkType === 1): ?>
+                                                    <li>
+                                                        <label>
+                                                            <input class="store-category-node-select"
+                                                                   type="checkbox"
+                                                                   value="<?php echo $_node->getNodeId() ?>">
+                                                            <?php echo $_node->getName() ?></input><span></span>
+                                                        </label>
+                                                    </li>
+                                                <?php endif; ?>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
+                                </li>
+                            <?php endif ?>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif ?>
+
+            <div id="stores-info-wrap" style="display: none">
+                <div id="stores-info" class="stores-info"></div>
+                <div id="pagination" class="text-center"></div>
+            </div>
+
+
+        </div>
+        <div class="store-locator-content-right">
+            <div class="store-locator-map-content">
+                <div id="map-canvas" style="width: 100%; height: 100%" class="store-locator-map"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <style>
+        .store-locator-content .store-locator-content-left .stores-info {
+            display: block;
+        }
+    </style>
+
+    <a href="<?php echo $block->getBaseUrl(); ?>stores" class="action primary-xsmall clear-states" style=" display: none; margin-top: 10px;">Clear</a>
+
+    <div class="map-result-control" style="display: none">
+        <a href="#" class="clear-store-results"> Clear All </a>
+        <a href="#" class="action primary-xsmall show-store-results"> see Results ( <span class="count"></span> )</a>
+    </div>
+    <div class="store-locator-description">
+        <p><?php echo $block->getSEOText() ?></p>
+    </div>
+</div>
+<script>
+    require([
+        'CameraHouse_StoreLocator/js/stores',
+        'gMapsJs'
+    ], function (stores) {
+        var param = <?php echo $block->getMapParams()?>;
+
+        <?php echo $block->getJsConfigs('param.postcode')?>
+
+        stores(param);
+    });
+</script>
+<script id="store-info-template" class="store-info-template" type="text/x-magento-template">
+    <div class="store-info" data-id="<%- data.pos %>" id="info-<%- data.pos %>">
+        <label class="store-label"><%- data.f %></label>
+        <a class="store-title" href="<%- data.u %>"><%- data.n %></a>
+        <div class="address-container">
+            <span class="store-distance"><%- (dis?dis+'km':'') %></span>
+            <a href="<%- data.u %>"><span class="store-address"><%- data.a %></span></a>
+        </div>
+        <div class="direction-container">
+            <span class="store-tel"><a href="tel:<%- data.p %>"><%- data.p %></a></span>
+            <a class="store-dir" target="_blank"
+               href="https://maps.google.com?saddr=Current+Location&daddr=' + <%- data.a %> + '"><?php echo __('Directions') ?></a>
+        </div>
+
+        <div class="store-accordion">
+            <p class="store-om"><%- hrs.om %></p>
+            <ul class="store-oh" style="display:none;"><%= hrs.oh %></ul>
+        </div>
+    </div>
+</script>
+

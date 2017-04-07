@@ -1,0 +1,107 @@
+<?php
+/**
+ * Netstarter Pty Ltd.
+ *
+ * @category    CameraHouse
+ * @package     CameraHouse_StoreLocator
+ * @author      Netstarter Team <contact@netstarter.com>
+ * @copyright   Copyright (c) 2016 Netstarter Pty Ltd. (http://www.netstarter.com.au)
+ */
+?>
+<div class="event-view">
+    <?php echo $block->getPageContent(); ?>
+</div>
+
+<div class="form-container">
+
+    <div class="store-details">
+        <div class="heading"><h3>Store Details</h3></div>
+
+        <div class="store-name"><?php echo $block->getStoreName() ?></div>
+
+        <div class="store-address"><?php echo $block->getStoreAddress() ?></div>
+
+        <div class="store-phone"><?php echo $block->getStorePhone() ?></div>
+    </div>
+
+    <legend class="legend"><span><?php /* @escapeNotVerified */
+            echo __('Register For Event') ?></span></legend>
+
+
+    <div class="registration-form">
+        <form class="form event-contact"
+              action="<?php /* @escapeNotVerified */
+              echo $block->getFormAction(); ?>"
+              id="event-contact-form"
+              method="post"
+              data-hasrequired="<?php /* @escapeNotVerified */
+              echo __('* Required Fields') ?>"
+              data-mage-init='{"validation":{}}'>
+            <fieldset class="fieldset">
+                <div class="form-left-box fields-container">
+                    <div class="field fname required">
+                        <label class="label" for="fname"><span><?php /* @escapeNotVerified */
+                                echo __('First name') ?></span></label>
+                        <div class="control">
+                            <input name="fname" id="fname" title="<?php /* @escapeNotVerified */
+                            echo __('First name') ?>" class="input-text" type="text" data-validate="{required:true}"/>
+                        </div>
+                    </div>
+                    <div class="field lname required">
+                        <label class="label" for="lname"><span><?php /* @escapeNotVerified */
+                                echo __('Last name') ?></span></label>
+                        <div class="control">
+                            <input name="lname" id="lname" title="<?php /* @escapeNotVerified */
+                            echo __('Last name') ?>" class="input-text" type="text" data-validate="{required:true}"/>
+                        </div>
+                    </div>
+                    <div class="field email required">
+                        <label class="label" for="email"><span><?php /* @escapeNotVerified */
+                                echo __('Email address') ?></span></label>
+                        <div class="control">
+                            <input name="email" id="email" title="<?php /* @escapeNotVerified */
+                            echo __('Email address') ?>" class="input-text" type="email"
+                                   data-validate="{required:true, 'validate-email':true}"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-right-box fields-container">
+                    <div class="field telephone">
+                        <label class="label" for="telephone"><span><?php /* @escapeNotVerified */
+                                echo __('Phone Number') ?></span><span class="optional">(optional)</span></label>
+                        <div class="control">
+                            <input name="telephone" id="telephone" title="<?php /* @escapeNotVerified */
+                            echo __('Phone Number') ?>" class="input-text" type="text"/>
+                        </div>
+                    </div>
+                    <div class="field comment required">
+                        <label class="label" for="comment"><span><?php /* @escapeNotVerified */
+                                echo __('Message') ?></span></label>
+                        <div class="control">
+                    <textarea name="comment" id="comment" title="<?php /* @escapeNotVerified */
+                    echo __('Message') ?>" class="input-text" cols="5" rows="3"
+                              data-validate="{required:true}"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </fieldset>
+            <div class="actions-toolbar">
+                <div class="primary">
+                    <input type="hidden" name="hideit" id="hideit" value=""/>
+                    <input type="hidden" name="eventid" id="eventid" value="<?php echo $block->getEventId() ?>"/>
+                    <input type="hidden" name="identifier" id="identifier"
+                           value="<?php echo $block->getIdentifier() ?>"/>
+                    <input type="hidden" name="event" id="event" value="<?php echo $block->getPageTitle() ?>"/>
+                    <button type="submit" title="<?php /* @escapeNotVerified */
+                    echo __('Submit') ?>" class="action submit  primary-xsmall">
+                    <span><?php /* @escapeNotVerified */
+                        echo __('Submit') ?></span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+</div>

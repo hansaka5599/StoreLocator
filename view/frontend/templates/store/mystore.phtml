@@ -1,0 +1,52 @@
+<?php //echo $block->getMapParams() ?>
+
+
+<div id="mapOnMyaccount" style="height: 500px"></div>
+
+<script>
+
+    // This example displays a marker at the center of Australia.
+    // When the user clicks the marker, an info window opens.
+    require([
+        'jquery',
+        'nsutility',
+        'gMapsJs',
+    ], function ($, nsutility) {
+        "use strict";
+
+        var mapdata = <?php echo $block->getMapParams() ?>;
+
+        var uluru = {lat: mapdata.map.lat, lng: mapdata.map.lng};
+        var map = new google.maps.Map(document.getElementById('mapOnMyaccount'), {
+            zoom: 15,
+            center: uluru
+        });
+
+        var contentString = '<div class="map-info" id="content">' +
+            '<label class="store-label"></label>' +
+            '<a class="map-point-title" href="' + jQuery('.my-store-content .button').attr('href') + '">' + jQuery('.my-store-content .name').text() + '</a>' +
+            '<p class="store-address"><a href="' + jQuery('.my-store-content .button').attr('href') + '">' + mapdata.map.address.replace(/:br/g,"<br>") + '</a></p>' +
+            '<p class="store-tel">' + jQuery('.my-store-content .contact').html() + '</p>' +
+            '<a class="store-dir" target="_blank" href="https://maps.google.com?saddr=Current+Location&daddr= ' + mapdata.map.address + ' "><?php echo __('Directions')?></a>' +
+            '</div>';
+        var marker = new google.maps.Marker({
+            position: uluru,
+            map: map,
+            title: 'Uluru (Ayers Rock)'
+        });
+
+        if (!nsutility.isMobile()) { // Disable info view on mobile
+            var infowindow = new google.maps.InfoWindow({
+                content: contentString
+            });
+
+            infowindow.open(map, marker);
+
+            marker.addListener('click', function () {
+                infowindow.open(map, marker);
+            });
+        }
+    });
+</script>
+
+

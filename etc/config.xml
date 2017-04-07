@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ *
+ * @category    CameraHouse
+ * @package     CameraHouse_StoreLocator
+ * @author      Netstarter Team <contact@netstarter.com>
+ * @copyright   Copyright (c) 2015 Netstarter Pty Ltd. (http://www.netstarter.com.au)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <netstarter_storelocator>
+            <acl>
+                <acl_role>1</acl_role>
+            </acl>
+            <events>
+                <recipient_email>
+                    <![CDATA[hello@example.com]]>
+                </recipient_email>
+                <sender_email_identity>custom2</sender_email_identity>
+                <email_template>netstarter_storelocator_events_email_template</email_template>
+            </events>
+
+            <services>
+                <recipient_email>
+                    <![CDATA[hello@example.com]]>
+                </recipient_email>
+                <sender_email_identity>custom2</sender_email_identity>
+                <email_template>netstarter_storelocator_services_email_template</email_template>
+            </services>
+
+            <location>
+                <store_email_template>netstarter_storelocator_location_store_email_template</store_email_template>
+                <home_slider_id>5</home_slider_id>
+                <store_page_product_limit>3</store_page_product_limit>
+                <course_attribute_set_id>137</course_attribute_set_id>
+            </location>
+            <settings>
+                <store_page_service_limit>6</store_page_service_limit>
+            </settings>
+        </netstarter_storelocator>
+    </default>
+</config>

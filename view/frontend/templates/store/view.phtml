@@ -1,0 +1,230 @@
+<?php
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+
+<div class="store-locator-main">
+    <div class="store-locator-content" data-mage-init='{"store":<?php echo $block->getMapParams() ?>}'>
+        <div class="store-locator-content-left">
+            <div class="store-locator-content-info">
+                <h2><?php echo __('Store Details'); ?></h2>
+                <form action="" method="POST">
+                    <?php echo $block->getBlockHtml('formkey') ?>
+                    <input type="hidden" name="store_location" value="<?php echo $block->getStoreLocationId(); ?>">
+                    <input type="hidden" id="store_meta_title" name="store_meta_title" value="<?php echo $block->getStoreLocationMetaTitle(); ?>">
+                    <ul>
+                        <div style="display: none;" id="store-locator-page-title-wrapper" class="page-title-wrapper">
+                            <h1 class="page-title">
+                                <span data-ui-id="page-title-wrapper" class="base"><?php echo $block->getStoreHeadingName();?></span>
+                                <?php if ($block->getIsNew()): ?>
+                                    <span class="store-is-new"><?php echo __('New') ?></span>
+                                <?php endif; ?>
+                            </h1>
+                        </div>
+
+                        <?php $displayCategories = $block->getDisplayableCategories('side_pane'); ?>
+                        <?php if ($displayCategories): ?>
+                            <?php foreach ($displayCategories as $name => $categories): ?>
+                                <div class="category-name heading"><?php echo __($name); ?></div>
+                                <div class="categories">
+                                    <ul>
+                                        <?php foreach ($categories as $category): ?>
+                                            <li><?php echo $category->getName(); ?></li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                        <li class="address"><span><?php echo $block->getAddress() ?></span></li>
+                        <li id="direction" class="direction"><a href=""><span><?php echo __('Directions') ?></span></a>
+                        </li>
+                        <li class="contact">
+                            <a href="tel:<?php echo $block->getPhone() ?>">
+                                <span><?php echo $block->getPhone() ?></span>
+                            </a>
+                        </li>
+                        <li id="open-msg" class="is-open" style="display: none"></li>
+                        <li id="bookmark"
+                            class=" bookmark set-local"
+                            data-post='<?php echo $block->getSaveStoreUrl() ?>'>
+                            <span style="cursor: pointer;"><?php echo __('Set as Local Store') ?></span>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+
+            <?php
+            $serviceCollection = $block->getStoreServices();
+            if ($serviceCollection):
+                ?>
+                <div class="store-locator-services    ">
+                    <div class="heading">
+                        <?php echo __('Services') ?>
+                    </div>
+
+                    <div class="store-services">
+                        <ul>
+                            <?php
+                            foreach ($serviceCollection as $service):
+                                $url = '';
+                                if ($service['dedicated_page'] == '1') {
+                                    $url = $block->getServiceUrl($service['identifier']);
+                                } else {
+                                    $url = $service['redirect_url'];;
+                                }
+                                ?>
+                                <li>
+                                    <div class="icon">
+                                        <?php if (array_key_exists('icon', $service)): ?>
+                                            <img src="<?php echo $service['icon']; ?>" width="20" height="20"/>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div class="service-name">
+                                        <?php if ($service['dedicated_page']) : ?>
+                                        <a href="<?php echo $url; ?>" title="<?php echo $service['name']; ?>">
+                                            <?php endif; ?>
+                                            <?php echo $service['name']; ?>
+                                            <?php if ($service['dedicated_page']) : ?>
+                                        </a>
+                                    <?php endif; ?>
+                                    </div>
+
+                                </li>
+                                <?php
+                            endforeach;
+                            ?>
+                        </ul>
+                    </div>
+
+                    <div class="store-all-services">
+                        <a href="<?php echo $block->getServiceLandingUrl() ?>"><?php echo __('show all services'); ?></a>
+                    </div>
+                </div>
+                <?php
+            endif;
+            ?>
+
+            <?php
+            $eventsCollection = $block->getEventsList();
+            if (!empty($eventsCollection->getData())):
+                ?>
+                <div class="store-locator-events">
+                    <div class="heading">
+                        <?php echo __('Events') ?>
+                    </div>
+
+                    <div class="store-events">
+                        <ul>
+                            <?php
+                            foreach ($eventsCollection as $event):
+                                ?>
+                                <li>
+                                    <a href="<?php echo $block->getEventUrl($event->getIdentifier()); ?>"
+                                       title="<?php echo $event->getPageTitle(); ?>">
+                                        <?php echo $event->getPageTitle(); ?>
+                                    </a>
+                                </li>
+                                <?php
+                            endforeach;
+                            ?>
+                        </ul>
+                    </div>
+
+                </div>
+                <?php
+            endif;
+            ?>
+
+            <div class="store-locator-content-hours">
+                <div id="open" style="display: none">
+                    <div class="heading"><?php echo __('Store Hours') ?></div>
+                    <div id="open-hrs"></div>
+                </div>
+                <div class="holiday" style="display: none">
+                    <div class="heading"><?php echo __('Public holidays') ?></div>
+                    <div id="holiday-hrs"></div>
+                </div>
+            </div>
+            <?php echo $block->getChildHtml('ch.storelocator.contact.form'); ?>
+        </div>
+        <div class="store-locator-content-right">
+
+            <?php
+            $_slider = $block->getSlider();
+            $_image = $block->getImage();
+            if ($_slider):
+                ?>
+                <div id="store-slider-wrapper" class="store-slider-wrapper">
+                    <div id="store-slider" class="store-slider">
+                        <?php echo $this->getLayout()->createBlock('Netstarter\Bannerslider\Block\SliderItem')
+                            ->setSliderId($_slider)->toHtml(); ?>
+                    </div>
+                </div>
+                <?php
+            elseif ($_image): ?>
+                <div id="store-image-wrapper" class="store-image-wrapper">
+                    <div id="store-image" class="store-image" style="display: block;">
+                        <img src="<?php echo $_image ?>"/>
+                    </div>
+                    <div id="street-view" class="store-image" style="display: none;"></div>
+                </div>
+            <?php endif; ?>
+            <?php $displayCategories = $block->getDisplayableCategories('content'); ?>
+            <?php if ($displayCategories): ?>
+                <?php foreach ($displayCategories as $name => $categories): ?>
+                    <div class="store-services">
+                        <div class="heading"><?php echo $name ?></div>
+                        <ul>
+                            <?php foreach ($categories as $category): ?>
+                                <li><?php echo $category->getName(); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+            <div class="store-content"><?php echo $block->getContent() ?></div>
+            <div id="map-canvas" class="storelocator-map"></div>
+            <div class="google-map-btn">
+                <a href="<?php echo $block->getMapUrl() ?>"
+                   target="_blank"><span><?php echo __('View on google map') ?></span></a>
+            </div>
+
+            <?php $_htgContent = $block->getHowtoGetContent() ?>
+            <?php if (!empty($_htgContent)): ?>
+                <div class="how-to-get">
+                    <div class="heading"><span><?php echo __('How to get there?') ?></span></div>
+                    <div class="content"><?php echo $_htgContent ?></div>
+                </div>
+            <?php endif; ?>
+
+            <?php echo $block->getChildHtml('ch.storelocator.course.products'); ?>
+
+            <div id="spot-light-container">
+                <?php
+                $_spotlight1 = $block->getStoreSpotLight(1);
+                if ($_spotlight1['src'] != null):
+                    ?>
+                    <div id="spotlight-1">
+                        <a href="<?php echo $_spotlight1['url']; ?>" title="<?php echo $_spotlight1['alt']; ?>">
+                            <img src="<?php echo $_spotlight1['src'] ?>"/>
+                        </a>
+                    </div>
+                <?php endif; ?>
+
+                <?php
+                $_spotlight2 = $block->getStoreSpotLight(2);
+                if ($_spotlight2['src'] != null):
+                    ?>
+                    <div id="spotlight-2">
+                        <a href="<?php echo $_spotlight2['url']; ?>" title="<?php echo $_spotlight2['alt']; ?>">
+                            <img src="<?php echo $_spotlight2['src'] ?>"/>
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>

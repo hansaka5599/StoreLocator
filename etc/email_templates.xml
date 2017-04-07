@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2016 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="netstarter_storelocator_events_email_template" label="Event Contact Form" file="submitted_form.html"
+              type="text" module="CameraHouse_StoreLocator" area="adminhtml"/>
+    <template id="netstarter_storelocator_services_email_template" label="Service Contact Form"
+              file="service_submitted_form.html" type="text" module="CameraHouse_StoreLocator" area="adminhtml"/>
+    <template id="netstarter_storelocator_location_store_email_template" label="Store Contact Form"
+              file="contact_store_form.html" type="text" module="CameraHouse_StoreLocator" area="adminhtml"/>
+</config>

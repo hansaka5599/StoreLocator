@@ -1,0 +1,184 @@
+<?php
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+
+
+<style>
+    #menuHovetouch {
+        background: transparent;
+        width: 134px;
+        height: 50px;
+        position: absolute !important;
+        z-index: 999999999;
+        display: none;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+    }
+
+    @media (max-width: 767px) {
+        #menuHovetouch {
+            display: none !important;
+        }
+    }
+    .nav-sections .nav-sections-items .nav-sections-item-content .navigation .navigation-wrapper .mega-menu-wrapper .mega-menu > li .mega-menu-sub .mega-menu-vertical li {
+        cursor: pointer;
+    }
+</style>
+
+
+<style>
+
+    .minicart-items-wrapper {
+        position: relative;
+    }
+
+    .ellip {
+        display: block;
+        height: 100%;
+    }
+
+    .ellip-line {
+        display: inline-block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        word-wrap: normal;
+        max-width: 100%;
+    }
+
+    .ellip,
+    .ellip-line {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-info-wrapper-details .product-info-tab-reviews {
+        /*margin-top: -50px ;*/
+        /*padding-top: 100px ;*/
+    }
+
+
+</style>
+
+<div class="topstore-data-wrapper">
+    <span class="top-store-label"> Your Store : </span> <span class="top-store-info-name"> SELECT A STORE</span>
+    <span class="top-store-info-wrap" style="display: none">
+        <a class="top-store-link" href="" title="">
+            <span class="top-store-address"></span>
+            <span class="top-store-tel"></span>
+            <span class="top-store-time"></span>
+        </a>
+    </span>
+</div>
+
+<div class="store-locator-main topstore-locator" style="display: none">
+    <div class="store-locator-heading" style="position: relative">
+        <label class="find-store-label"> Find a store </label>
+        <div class="suburb-postcode-container">
+            <input id="toppanal-suburb-postcode-txt" placeholder="<?php echo __('Enter postcode or suburb') ?>"
+                   type="text" autocomplete="off" spellcheck="false">
+        </div>
+    </div>
+    <div class="store-locator-content">
+        <div class="">
+            <?php $_categories = $block->getCategories() ?>
+            <?php if (!empty($_categories)): ?>
+                <div class="store-categories">
+                    <ul>
+                        <?php foreach ($_categories as $_category): ?>
+                            <?php $_linkType = (int)$_category->getLinkType(); ?>
+                            <?php $_nodes = $_category->getNodes() ?>
+                            <?php if (!empty($_nodes)): ?>
+                                <li class="<?php echo($_linkType === 1 ? 'foldable' : '') ?>">
+                                    <div class="heading"><?php echo $_category->getTitle() ?></div>
+                                    <?php $_categoryUrlPrefix = \Netstarter\StoreLocator\Model\Category::URL_PREFIX; ?>
+                                    <ul class="category-nodes hide">
+                                        <?php foreach ($_nodes as $_node): ?>
+                                            <?php if ($_linkType === 0): ?>
+                                                <li>
+                                                    <a href="/<?php echo $_categoryUrlPrefix . '/' . $_node->getRequestUrl() ?>">
+                                                        <?php echo $_node->getName() ?>
+                                                    </a>
+                                                </li>
+                                            <?php elseif ($_linkType === 1): ?>
+                                                <li>
+                                                    <label>
+                                                        <input class="store-category-node-select"
+                                                               type="checkbox"
+                                                               value="<?php echo $_node->getNodeId() ?>">
+                                                        <?php echo $_node->getName() ?></input>
+                                                    </label>
+                                                </li>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </li>
+                            <?php endif ?>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif ?>
+            <div id="toppanal-stores-info" class="stores-info"></div>
+        </div>
+        <div class="store-locator-content-right" style="display: none">
+            <div class="store-locator-map-content">
+                <div id="toppanal-map-canvas" style="width: 100%; height: 100%;" class="store-locator-map"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="topstore-locator-overlay" style="display: none"></div>
+
+<div id="subdomainOptionalStors" style="display: none">
+    <h3> Please select your Store. </h3>
+</div>
+
+
+<script>
+    //    'gMapsJs': 'https://maps.googleapis.com/maps/api/js?key=<?php //echo $block->getKey() ?>//&v=3.exp&libraries=geometry'
+    require.config({
+        paths: {
+            'gMapsJs': 'https://maps.google.com/maps/api/js?key=<?php echo $block->getKey() ?>&libraries=geometry'
+        }
+    });
+
+</script>
+
+<script>
+    require([
+        'jquery',
+        'CameraHouse_StoreLocator/js/toppanal-stores',
+        'Magento_Ui/js/modal/modal',
+        'gMapsJs',
+        'CameraHouse_StoreLocator/js/dynamicStoreData'
+    ], function ($, stores, modal) {
+        var param = <?php echo $block->getMapParams()?>;
+
+        <?php echo $block->getJsConfigs('param.postcode')?>
+
+        stores(param);
+
+
+    });
+</script>
+<script id="toppanal-store-info-template" class="store-info-template" type="text/x-magento-template">
+    <div class="store-info toppanal-store-info" data-id="<%- data.pos %>" id="info-<%- data.pos %>">
+        <label><%- data.f %></label>
+        <!--        <strong><a href="<%- data.u %>"><%- data.n %></a></strong>-->
+        <a href="#" class="store-info-name"><%- data.n %></a>
+        <p><%- (dis?dis+'km':'') %></p>
+        <address class="store-address" style="display: none"><%- data.a %></address>
+        <a style="display: none" class="store-dir" target="_blank"
+           href="https://maps.google.com?saddr=Current+Location&daddr=' + encodeURIComponent(data.a) + '"><?php echo __('Directions') ?></a>
+        <p style="display: none" class="store-tel"><a href="tel:<%- data.p %>"><%- data.p %></a></p>
+        <div style="display: none" class="store-accordion">
+            <p class="store-om"><%- hrs.om %></p>
+            <ul class="store-oh" style="display:none;"><%= hrs.oh %></ul>
+        </div>
+        <input type="hidden" name="" class="store-info-data" value='<%- jsonData %>'>
+    </div>
+</script>

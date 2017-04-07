@@ -1,0 +1,239 @@
+<?php
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+<?php
+// @codingStandardsIgnoreFile
+//https://github.com/Riki4321/magento-clever-cms/blob/master/app/design/adminhtml/default/clever/template/cms/page/permissions/tree.phtml
+?>
+<script>
+    require([
+        "jquery",
+        "tinymce",
+        'Magento_Ui/js/modal/alert',
+        "jquery/ui",
+        "mage/translate",
+        "mage/mage",
+        "mage/validation",
+        "mage/adminhtml/events",
+        "prototype",
+        'Magento_Ui/js/modal/modal',
+        "extjs/ext-tree-checkbox"
+    ], function (jQuery, tinyMCE, alert) {
+        CategoryNodes = {
+
+            tree: null,
+
+            bindCatElements: function (url) {
+                jQuery('.categories li').click(function () {
+                    var id = jQuery(this).attr('data-id');
+                    jQuery('.selected_cat').removeClass('selected_cat');
+                    jQuery(this).addClass('selected_cat');
+                    new Ajax.Updater('contents', url, {
+                        parameters: {
+                            category_id: id,
+                            store_locator_id: jQuery('#store-locator-id').val()
+                        }, evalScripts: true
+                    });
+                });
+            },
+
+            nodesSave: function (url) {
+
+                window.currentServise = [];
+                window.StoreService_removed = [];
+
+                StoreServiceObj.map(function (k, y) {
+                    if (k.selected) {
+                        /*
+                         * get current servises
+                         */
+                        currentServise[y] = k;
+                    }
+
+                    if (!k.selected) {
+                        /*
+                         * get removed servises
+                         */
+                        StoreService_removed[y] = k.node_id;
+                    }
+                });
+
+
+                new Ajax.Request(url, {
+                    parameters: {
+                        nodes: jQuery('#category-nodes').val(),
+                        store_services: JSON.stringify(currentServise),
+                        store_services_removed: JSON.stringify(StoreService_removed),
+                        category_id: jQuery('.selected_cat').attr('data-id'),
+                        store_locator_id: jQuery('#store-locator-id').val()
+                    },
+                    onSuccess: function (transport) {
+                        var data = transport.responseText.evalJSON();
+                        if (data.error) {
+                            alert({
+                                title: jQuery.mage.__('Error'),
+                                content: jQuery.mage.__(data.error)
+                            });
+                        } else {
+                            alert({
+                                title: jQuery.mage.__('Successful'),
+                                content: jQuery.mage.__('Successfully updated the categories of the location')
+                            });
+                        }
+                    }
+                });
+            },
+
+            getDivHtml: function (id, html) {
+                if (!html) html = '';
+                return '<div id="' + id + '">' + html + '</div>';
+            },
+
+            onAjaxSuccess: function (transport) {
+                if (transport.responseText.isJSON()) {
+                    var response = transport.responseText.evalJSON();
+                    if (response.error) {
+                        throw response;
+                    } else if (response.ajaxExpired && response.ajaxRedirect) {
+                        setLocation(response.ajaxRedirect);
+                    }
+                }
+            },
+
+            dialogOpened: false,
+
+            getMaxZIndex: function () {
+                var max = 0, i;
+                var cn = document.body.childNodes;
+                for (i = 0; i < cn.length; i++) {
+                    var el = cn[i];
+                    var zIndex = el.nodeType == 1 ? parseInt(el.style.zIndex, 10) || 0 : 0;
+                    if (zIndex < 10000) {
+                        max = Math.max(max, zIndex);
+                    }
+                }
+                return max + 10;
+            },
+
+            openDialog: function (widgetUrl) {
+                if (this.dialogOpened) {
+                    return
+                }
+                var oThis = this;
+                this.dialogWindow = jQuery('<div/>').modal({
+                    title: jQuery.mage.__('Set Categories...Please click on category to load categories tree'),
+                    type: 'slide',
+                    buttons: [],
+                    opened: function () {
+                        var dialog = jQuery(this).addClass('loading magento_message');
+                        new Ajax.Updater($(this), widgetUrl, {
+                            evalScripts: true, onComplete: function () {
+                                dialog.removeClass('loading');
+                            }
+                        });
+                    },
+                    closed: function (e, modal) {
+                        modal.modal.remove();
+                        oThis.dialogOpened = false;
+                    }
+                });
+                this.dialogOpened = true;
+                this.dialogWindow.modal('openModal');
+            },
+
+            drawTree: function (nodes) {
+                this.tree = new Ext.tree.TreePanel('tree-container', {
+                    animate: false,
+                    loader: false,
+                    enableDD: true,
+                    width: 250,
+                    height: 400,
+                    cls: 'treeLargeFont',
+                    containerScroll: true,
+                    rootVisible: false,
+                    lines: true
+                });
+                obj = this;
+                this.tree.on('check', obj.checkHandler, this.tree);
+
+                var treeRoot = new Ext.tree.TreeNode({
+                    text: '/',
+                    id: '_root',
+                    allowDrop: true,
+                    allowDrag: false,
+                    expanded: true,
+                    leaf: true,
+                    checked: false,
+                    cls: 'category_node_root'
+                });
+                this.tree.setRootNode(treeRoot);
+
+                var cssClass = 'category_node';
+                var selectedNode = [];
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    var n = nodes[i];
+                    var node = new Ext.tree.TreeNode({
+                        id: n.node_id,
+                        text: n.name,
+                        cls: cssClass,
+                        expanded: false,
+                        allowDrop: true,
+                        allowDrag: true,
+                        checked: n.selected,
+                        uiProvider: Ext.tree.CheckboxNodeUI
+                    });
+                    if (n.selected) {
+                        selectedNode.push(n.node_id);
+                    }
+
+                    if (parentNode = this.tree.getNodeById(nodes[i].parent_node_id)) {
+                        parentNode.appendChild(node);
+                    } else {
+                        treeRoot.appendChild(node);
+                    }
+                }
+                if (selectedNode.length > 0) {
+                    jQuery('#category-nodes').val(selectedNode.join(','));
+                }
+
+                this.tree.render();
+            },
+            checkHandler: function (node) {
+
+                if (node.attributes.checked && node.parentNode) {
+                    var n = node.parentNode;
+                    this.removeListener('check', obj.checkHandler);
+                    do {
+                        if (!n || n.attributes.id == '_root') {
+                            break;
+                        } else {
+                            n.ui.check(true);
+                        }
+                    } while (n = n.parentNode);
+                    this.on('check', obj.checkHandler);
+                }
+                if (!node.isLeaf() && node.hasChildNodes()) {
+                    this.removeListener('check', obj.checkHandler);
+                    obj.processChildren(node, node.attributes.checked);
+                    this.on('check', obj.checkHandler);
+                }
+                $('category-nodes').value = obj.tree.getChecked().join(',');
+            },
+            processChildren: function (node, state) {
+                if (!node.hasChildNodes()) return false;
+                for (var i = 0; i < node.childNodes.length; i++) {
+                    node.childNodes[i].ui.check(state);
+                    if (node.childNodes[i].hasChildNodes()) {
+                        obj.processChildren(node.childNodes[i], state);
+                    }
+                }
+                return true;
+            }
+        };
+    });
+
+
+</script>

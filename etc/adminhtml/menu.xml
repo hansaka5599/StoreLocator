@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="CameraHouse_StoreLocator::main_menu" title="Store Locator" module="CameraHouse_StoreLocator"
+             sortOrder="10" resource="CameraHouse_StoreLocator::main_menu" parent="CameraHouse_Base::main_menu"/>
+        <add id="CameraHouse_StoreLocator::configuration" title="Configuration" module="CameraHouse_StoreLocator"
+             sortOrder="1" parent="CameraHouse_StoreLocator::main_menu"
+             action="adminhtml/system_config/edit/section/netstarter_storelocator"
+             resource="CameraHouse_StoreLocator::configuration"/>
+        <add id="CameraHouse_StoreLocator::ch_store_locator_events" title="Store Events"
+             module="CameraHouse_StoreLocator" sortOrder="20" parent="Netstarter_StoreLocator::store_locator"
+             action="ch_store_locator/events/index" resource="CameraHouse_StoreLocator::ch_store_locator_events"/>
+    </menu>
+</config>

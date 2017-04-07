@@ -1,0 +1,195 @@
+<?php
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+
+
+<div class="select-store-wrapper">
+
+
+    <a href="#" class="action primary-xsmall select-store select-store-btn">Select Store</a>
+
+    <div id="currentStoreIs" class="select-store-data">
+        Please select the store
+    </div>
+
+
+    <div id="selectStorePopup" style="display: none; max-width: 600px">
+        <div class="store-locator-main selectStore-locator">
+            <div class="store-locator-heading" style="position: relative">
+                <h4>Please select your Store. </h4>
+                <label class="find-store-label">Enter postcode or suburb</label>
+                <div class="suburb-postcode-container">
+                    <input id="selectStore-suburb-postcode-txt"
+                           placeholder="<?php echo __('Enter postcode or suburb') ?>" type="text" autocomplete="off"
+                           spellcheck="false">
+                </div>
+                <div class="seperator-elemant"> <?php echo __('Or')?> </div>
+                <div class="locater-button-wrap"><button class="action primary-xsmall" id="current-location-btn"><span><?php echo __('Use my location')?></span></button></div>
+            </div>
+            <div class="store-locator-content">
+                <div class="">
+                    <?php $_categories = $block->getCategories() ?>
+                    <?php if (!empty($_categories)): ?>
+                        <div class="store-categories">
+                            <ul>
+                                <?php foreach ($_categories as $_category): ?>
+                                    <?php $_linkType = (int)$_category->getLinkType(); ?>
+                                    <?php $_nodes = $_category->getNodes() ?>
+                                    <?php if (!empty($_nodes)): ?>
+                                        <li class="<?php echo($_linkType === 1 ? 'foldable' : '') ?>">
+                                            <div class="heading"><?php echo $_category->getTitle() ?></div>
+                                            <?php $_categoryUrlPrefix = \Netstarter\StoreLocator\Model\Category::URL_PREFIX; ?>
+                                            <ul class="category-nodes hide">
+                                                <?php foreach ($_nodes as $_node): ?>
+                                                    <?php if ($_linkType === 0): ?>
+                                                        <li>
+                                                            <a href="/<?php echo $_categoryUrlPrefix . '/' . $_node->getRequestUrl() ?>">
+                                                                <?php echo $_node->getName() ?>
+                                                            </a>
+                                                        </li>
+                                                    <?php elseif ($_linkType === 1): ?>
+                                                        <li>
+                                                            <label>
+                                                                <input class="store-category-node-select"
+                                                                       type="checkbox"
+                                                                       value="<?php echo $_node->getNodeId() ?>">
+                                                                <?php echo $_node->getName() ?></input>
+                                                            </label>
+                                                        </li>
+                                                    <?php endif; ?>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        </li>
+                                    <?php endif ?>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    <?php endif ?>
+                    <div id="selectStore-stores-info" class="stores-info"></div>
+                </div>
+                <div class="store-locator-content-right" style="display: none">
+                    <div class="store-locator-map-content">
+                        <div id="selectStore-stores-map-canvas" style="width: 100%; height: 100%;"
+                             class="store-locator-map"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <style>
+        .selectStorePopupWrap {
+            /*max-width: 500px;*/
+            margin: auto;
+        }
+
+        .selectStorePopupWrap h3 {
+            text-align: center;
+        }
+
+        .selectStorePopupWrap.modal-popup .modal-inner-wrap {
+            overflow: visible;
+            max-width: 400px;
+        }
+
+        .selectStorePopupWrap .suburb-postcode-container {
+            width: 100%;
+            display: block;
+        }
+
+        /*.selectStore-store-info .store-accordion{*/
+        /*display: none;*/
+        /*}*/
+        .selectStore-store-info p {
+            margin-bottom: 0;
+        }
+
+        .selectStore-store-info {
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <script>
+        require.config({
+            paths: {
+                'gMapsJs': 'https://maps.google.com/maps/api/js?key=<?php echo $block->getKey() ?>&libraries=geometry'
+            }
+        });
+
+        require([
+            'jquery',
+            'CameraHouse_StoreLocator/js/selectStore-stores',
+            'Magento_Ui/js/modal/modal',
+            'gMapsJs'
+        ], function ($, stores, modal) {
+            "use strict";
+
+            var param = <?php echo $block->getMapParams()?>;
+
+            <?php echo $block->getJsConfigs('param.postcode')?>
+
+            stores(param);
+
+        });
+    </script>
+
+
+    <script id="selectStore-store-info-template" class="store-info-template" type="text/x-magento-template">
+        <div class="selectStore-store-info" data-id="<%- data.pos %>" id="info-<%- data.pos %>">
+            <div class="selected-store-name">
+                <label><%- data.f %></label>
+                <a href="#" class="store-info-name" id="current-location-btn"><%- data.n %></a>
+            </div>
+            <div class="selected-store-address">
+                <div class="title"><?php echo __("Address") ?></div>
+                <address class="store-address">
+                    <span class="street"><%- data.fa.st %></span>
+                    <% if(data.fa.st2) { %>
+                    <span class="street"><%- data.fa.st2 %></span>
+                    <% } %>
+                    <span class="address-line2">
+                        <span class="suburb"><%- data.fa.su %> </span>
+                        <span class="state"><%- data.fa.rc %> </span>
+                        <span class="postcode"><%- data.fa.po %></span>
+                    </span>
+                </address>
+            </div>
+            <div class="selected-store-phone">
+                <div class="title"><?php echo __("Phone:") ?></div>
+                <div class="store-tel">
+                    <a href="tel:<%- data.p %>"><%- data.p %></a>
+                </div>
+            </div>
+            <div class="store-accordion">
+                <div class="title"><?php echo __("Select Store") ?></div>
+            </div>
+            <div class="select-store-open-hours">
+                <div class="title store-om"><?php echo __("Opening Hours") ?></div>
+                <ul class="store-oh" style="display:none;"><%= hrs.oh %></ul>
+            </div>
+
+            <?php
+            if ($this->getRequest()->getRouteName() != "contact" && $this->getRequest()->getRouteName() != "price"):
+            ?>
+            <div class="store-notes">
+                <span class="note">
+                    <?php
+                    echo __("Note: Please ensure you bring along your photo ID and your receipt when you come in to pickup your product(s). 
+                    The store will contact you when your goods are ready for collection.");
+                    ?>
+                </span>
+            </div>
+            <?php endif; ?>
+            <input type="hidden" name="" class="store-info-data" value='<%- jsonData %>'>
+        </div>
+    </script>
+</div>
+
+
+
+

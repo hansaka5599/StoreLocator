@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Netstarter_StackCore::main_menu">
+                    <resource id="Netstarter_StoreLocator::store_locator_store">
+                        <resource id="CameraHouse_StoreLocator::ch_store_locator_service" title="Store Service"
+                                  sortOrder="50"/>
+                        <resource id="CameraHouse_StoreLocator::ch_store_locator_events" title="Store Events"
+                                  sortOrder="60"/>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

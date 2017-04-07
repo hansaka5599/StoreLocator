@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ *
+ * @category    CameraHouse
+ * @package     CameraHouse_StoreLocator
+ * @author      Netstarter Team <contact@netstarter.com>
+ * @copyright   Copyright (c) 2015 Netstarter Pty Ltd. (http://www.netstarter.com.au)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="netstarter_storelocator">
+            <group id="acl" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>ACL Configuration</label>
+                <field id="acl_role" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Super Admin Role</label>
+                    <comment>
+                        <![CDATA[This user role will have full access to store locator including add, delete and assign store managers]]>
+                    </comment>
+                </field>
+            </group>
+            <group id="settings" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Store Service Settings</label>
+                <field id="camerahouse_service" translate="label" type="select" sortOrder="100" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Service Category</label>
+                    <comment>Select the relevant category</comment>
+                    <source_model>CameraHouse\StoreLocator\Model\Config\StoreCategoryList</source_model>
+                </field>
+                <field id="store_page_service_limit" translate="label" type="text" sortOrder="20" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Store Page Services Limit</label>
+                    <comment>
+                        <![CDATA[This will take as the store service limit in store details page]]>
+                    </comment>
+                </field>
+            </group>
+            <group id="location" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <field id="store_email_template" translate="label comment" type="select" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Store Contact Email Template</label>
+                    <comment>Email template chosen based on theme fallback when "Default" option is selected.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                </field>
+                <field id="home_slider_id" translate="label" type="select" sortOrder="102" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Home Page Main Slider</label>
+                    <comment>Select the home page main banner slider</comment>
+                    <source_model>CameraHouse\StoreLocator\Model\Config\HomeBannerSlider</source_model>
+                </field>
+                <field id="store_page_product_limit" translate="label" type="text" sortOrder="103" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Store Page Course Product Limit</label>
+                    <comment>
+                        <![CDATA[This will take as the store page course product limit in store details page]]>
+                    </comment>
+                </field>
+                <field id="course_attribute_set_id" translate="label" type="text" sortOrder="104" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Course Product Attribute Set ID</label>
+                </field>
+            </group>
+            <group id="print_shop" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Print Shop Settings</label>
+                <field id="category_id" translate="label" type="select" sortOrder="101" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Print Shop Category</label>
+                    <comment>Select the relevant category</comment>
+                    <source_model>CameraHouse\StoreLocator\Model\Config\StoreCategoryList</source_model>
+                </field>
+            </group>
+
+            <group id="events" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Events Settings</label>
+
+                <field id="recipient_email" translate="label" type="text" sortOrder="10" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Send Emails To</label>
+                    <validate>validate-email</validate>
+                </field>
+                <field id="sender_email_identity" translate="label" type="select" sortOrder="20" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Email Sender</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Identity</source_model>
+                </field>
+                <field id="email_template" translate="label comment" type="select" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Email Template</label>
+                    <comment>Email template chosen based on theme fallback when "Default" option is selected.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                </field>
+            </group>
+
+            <group id="services" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Services Settings</label>
+
+                <field id="recipient_email" translate="label" type="text" sortOrder="10" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Send Emails To</label>
+                    <validate>validate-email</validate>
+                </field>
+                <field id="sender_email_identity" translate="label" type="select" sortOrder="20" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Email Sender</label>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Identity</source_model>
+                </field>
+                <field id="email_template" translate="label comment" type="select" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Email Template</label>
+                    <comment>Email template chosen based on theme fallback when "Default" option is selected.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Email\Template</source_model>
+                </field>
+            </group>
+
+        </section>
+
+    </system>
+</config>

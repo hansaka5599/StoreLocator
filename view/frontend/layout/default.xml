@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ *
+ * @category    CameraHouse
+ * @package     CameraHouse_StoreLocator
+ * @author      Netstarter Team <contact@netstarter.com>
+ * @copyright   Copyright (c) 2015 Netstarter Pty Ltd. (http://www.netstarter.com.au)
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="header.panel">
+            <block class="CameraHouse\StoreLocator\Block\Stores\Top" name="ch.storelocator.stores.view"
+                   template="top.phtml"/>
+        </referenceBlock>
+        <referenceBlock name="head.additional">
+            <block class="CameraHouse\StoreLocator\Block\Head\Additional\Canonical" name="ch.store.head" as="ch.store.head" template="CameraHouse_StoreLocator::head/additional/canonical.phtml"/>
+        </referenceBlock>
+
+    </body>
+</page>

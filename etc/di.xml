@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ *
+ * @category    CameraHouse
+ * @package     CameraHouse_StoreLocator
+ * @author      Netstarter Team <contact@netstarter.com>
+ * @copyright   Copyright (c) 2015 Netstarter Pty Ltd. (http://www.netstarter.com.au)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <preference for="Netstarter\StoreLocator\Model\ResourceModel\Store"
+                type="CameraHouse\StoreLocator\Model\ResourceModel\Store"/>
+    <preference for="Netstarter\StoreLocator\Model\Store" type="CameraHouse\StoreLocator\Model\Store"/>
+    <preference for="Netstarter\StoreLocator\Block\Stores\DataAjax"
+                type="CameraHouse\StoreLocator\Block\Stores\DataAjax"/>
+
+    <type name="Netstarter\StoreLocator\Block\Stores\View">
+        <plugin name="camera_house_store_locator_block_stores_view" type="CameraHouse\StoreLocator\Block\Stores\View"
+                sortOrder="100"/>
+    </type>
+    <type name="Netstarter\StoreLocator\Ui\Component\Listing\Column\StoreActions">
+        <plugin name="camera_house_store_locator_ui_component_listing_column_store_action"
+                type="CameraHouse\StoreLocator\Ui\Component\Listing\Column\StoreActions" sortOrder="100"/>
+    </type>
+    <type name="Netstarter\StoreLocator\Model\ResourceModel\Category\Collection">
+        <plugin name="camera_house_store_locator_model_resourcemodel_category_collection"
+                type="CameraHouse\StoreLocator\Model\ResourceModel\Category\Collection" sortOrder="100"/>
+    </type>
+    <preference for="Netstarter\StoreLocator\Model\Category\Node" type="CameraHouse\StoreLocator\Model\Category\Node"/>
+    <preference for="Netstarter\StoreLocator\Model\ResourceModel\Category\Node"
+                type="CameraHouse\StoreLocator\Model\ResourceModel\Category\Node"/>
+    <preference for="Netstarter\StoreLocator\Model\ResourceModel\Category\Node\Collection"
+                type="CameraHouse\StoreLocator\Model\ResourceModel\Category\Node\Collection"/>
+</config>

@@ -1,0 +1,49 @@
+<?php
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+
+<div class="my-store-content">
+    <div class="desc"><?php echo $block->getDescription() ?></div>
+    <div class="my-store">
+        <div class="heading"><?php echo __('Store Details') ?></div>
+        <div class="store-info">
+            <?php if ($block->hasMyStore()): ?>
+                <ul>
+                    <li class="name"><?php echo $block->getStoreName() ?></li>
+                    <li class="street"><?php echo $block->getStreet() ?></li>
+                    <?php $st2 = $block->getStreet2();
+                    if ($st2): ?>
+                        <li class="street"><?php echo $block->getStreet2() ?></li>
+                    <?php endif; ?>
+                    <li class="state"><?php echo $block->getSuburb() ?></li>
+                    <li class="contact"><a
+                            href="tel:<?php echo $block->getContact() ?>"><span><?php echo $block->getContact() ?></span></a>
+                    </li>
+                    <li><a href="<?php echo $block->getStoreLocationUrl() ?>"
+                           class="button"><?php echo __('More Details') ?></a></li>
+                </ul>
+
+            <?php else: ?>
+                <div class="message info empty"><span><?php echo __('No favourite store found') ?></span></div>
+            <?php endif ?>
+        </div>
+    </div>
+    <?php if ($block->hasMyStore()): ?>
+        <?php echo $block->getChildHtml('ns.storelocator.my.favourite.store'); ?>
+        <div class="google-map-btn">
+            <a class="action primary-xsmall bordered" href="<?php echo $block->getMapUrl() ?>"
+               target="_blank"><span><?php echo __('View on google map') ?></span></a>
+        </div>
+    <?php endif ?>
+    <div class="change-store">
+        <div class="heading"><?php echo __('Looking to change your store?') ?></div>
+        <div class="content"><?php echo $block->getChangeStoreText() ?></div>
+        <div class="button-sec">
+            <a href="<?php echo $block->getStoresUrl() ?>"
+               class="action primary-xsmall bordered"><span><?php echo __('Change store') ?></span></a>
+        </div>
+    </div>
+</div>

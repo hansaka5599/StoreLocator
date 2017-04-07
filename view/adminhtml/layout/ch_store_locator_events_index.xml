@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!---
+/**
+ * Netstarter Pty Ltd.
+ *
+ * @category    CameraHouse
+ * @package     CameraHouse_StoreLocator
+ * @author      Netstarter Team <contact@netstarter.com>
+ * @copyright   Copyright (c) 2016 Netstarter Pty Ltd. (http://www.netstarter.com.au)
+ */
+ -->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="ch_store_locator_events_block"/>
+    <body>
+        <referenceContainer name="content">
+            <block class="CameraHouse\StoreLocator\Block\Adminhtml\Events"
+                   name="adminhtml.ch_store_events.grid.container"/>
+        </referenceContainer>
+    </body>
+</page>

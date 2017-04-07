@@ -1,0 +1,145 @@
+<?php
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+/**
+ * Catalog layered navigation view block
+ *
+ * @author      Netstarter M2 Stack Team <contact@netstarter.com>
+ */
+
+?>
+<h2>Add Images</h2>
+<style>
+    td [type="text"] {
+        width: 100%;
+    }
+
+    td.image-img img {
+        max-width: 100px;
+    }
+
+    td.image-btns {
+        max-width: 100px;
+    }
+
+    #mytbodyis tr td {
+        text-align: center;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    #mytbodyis tr td a {
+        padding-top: 8px;
+        display: block;
+    }
+
+    td.image-btns {
+        max-width: 70px;
+    }
+
+    td.image-btns button {
+        width: 90%;
+    }
+
+    /*#mytbodyis tr td [src=""] + input{display: none}*/
+</style>
+
+<?php
+
+$allMQ = [0 => 'icon', 1 => 'tile'];
+$getMediaUrl = $this->getMediaUrl();
+
+?>
+<table class="admin__control-table">
+    <thead>
+    <tr>
+        <th>Image</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody id="mytbodyis">
+
+    <tr class="icon-group-row">
+        <td class="image-img"><h3>Icon</h3><br/><img src=""><input class="imagerelpath" type="hidden" value=""/></td>
+
+        <td class="image-btns">
+            <button class="mybuttonsis" type="button">
+                <span class="chngimg">Change Image</span><span class="addimg">add Image</span>
+            </button>
+            <a href="#" class="image-delete-link">Delete</a></td>
+    </tr>
+
+    <tr class="tile-group-row">
+        <td class="image-img"><h3>Tile</h3><br/><img src=""><input class="imagerelpath" type="hidden" value=""/></td>
+
+        <td class="image-btns">
+            <button class="mybuttonsis" type="button">
+                <span class="chngimg">Change Image</span><span class="addimg">add Image</span>
+            </button>
+            <a href="#" class="image-delete-link">Delete</a></td>
+    </tr>
+
+
+    </tbody>
+    <tfoot></tfoot>
+</table>
+<br>
+
+
+<script>
+
+    require([
+        'jquery'
+    ], function ($) {
+        "use strict";
+
+
+        var mediaUrlJs = '<?php echo $getMediaUrl; ?>';
+
+//debugger;
+        jQuery('#page_click_url').keyup(function () {
+            if (this.value != '') {
+                jQuery('#attribute-page_target-container').show();
+            } else {
+                jQuery('#attribute-page_target-container').hide();
+            }
+        }).change();
+
+        var page_image_collection_JSON = $('#sub_cat_category_icon_tile');
+
+        // set existing image's to tbl
+        if (page_image_collection_JSON.val() != '') {
+
+            var imgCollection = JSON.parse(page_image_collection_JSON.val());
+
+            if (imgCollection) {
+                imgCollection.reverse().map(function (k, v) {
+                    v++;
+                    var selectedMytbodyis = $('#mytbodyis tr:nth-child(' + v + ')');
+                    selectedMytbodyis.find('.image-img img').attr('src', mediaUrlJs + k.path);
+                    selectedMytbodyis.find('.image-img [type=hidden]').val(k.path);
+                    selectedMytbodyis.find('.image-media-query [type=text]').val(k.media);
+                });
+            }
+        }
+
+    });
+</script>
+
+<!--banner-image-add-->
+<!--netstarter/banner-image-add-->
+
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "store-image-add": ""
+        }
+    }
+
+
+</script>
+
+

@@ -1,0 +1,216 @@
+<?php
+/**
+ * Copyright © 2015 Netstarter. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+
+<div class="nodes">
+    <div class="insert-actions">
+        <?php echo $block->getButtonsHtml() ?>
+    </div>
+    <div id="tree-container"></div>
+    <style>
+        .x-tree-node {
+            font-size: 14px;
+        }
+
+        input.l-tcb {
+            height: 19px;
+            width: 15px;
+            margin-left: 2px;
+            margin-right: 2px;
+        }
+    </style>
+    <input type="hidden" id="category-nodes" readonly>
+    <div id="additional-form">
+        <?php echo $block->getChildHtml('event.form'); //echo $block->prepareForm() ?>
+    </div>
+</div>
+
+<script>
+
+    window.StoreServiceObj = <?php echo $block->getNodesJson()?>;
+
+    /*
+     // create the store service object
+     */
+
+    var body = jQuery('body');
+
+
+    if (StoreServiceObj) {
+        var aaa = CategoryNodes.drawTree(StoreServiceObj);
+    }
+
+
+    var service_category = jQuery('#service_category');
+    var dedicated_page = jQuery('#dedicated_page');
+    var page_title = jQuery('#page_title');
+    var content = jQuery('#content');
+    var content_heading = jQuery('#content_heading');
+    var meta_keyword = jQuery('#meta_keyword');
+    var meta_data = jQuery('#meta_data');
+    var redirect_url = jQuery('#redirect_url') ? jQuery('#redirect_url') : null;
+
+
+    /*
+     // Hide init form
+     */
+    service_category.closest('.admin__field').nextAll().hide();
+
+
+    /*
+     // change of select tree
+     */
+    jQuery('#tree-container [type="checkbox"]').on('change', function () {
+
+        jQuery('select#service_category').html('<option value="0" selected="selected">Please Select</option>');
+
+        jQuery('#tree-container [type="checkbox"]:checked').each(function () {
+            var opttext = jQuery(this).siblings('a').find('span').text();
+            jQuery('#service_category').append(jQuery('<option></option>').val(opttext).html(opttext));
+        });
+
+        /*
+         * update store sevise object checked propaty
+         * */
+        jQuery(this).siblings('a').text();
+
+        var $this = jQuery(this);
+
+        function changeSelected($this) {
+
+            if ($this.is(':checked')) {
+                StoreServiceObj.map(function (k, y) {
+                    if (k.name == $this.siblings('a').text()) {
+                        k.selected = true;
+                    }
+                });
+            } else {
+
+                StoreServiceObj.map(function (k, y) {
+                    if (k.name == $this.siblings('a').text()) {
+                        k.selected = false;
+                    }
+                });
+            }
+
+        }
+
+        changeSelected($this);
+
+    }).change();
+
+
+    body.on('change', '#service_category', function () {
+
+        if (this.value != 0) {
+
+            jQuery(this).closest('.admin__field').nextAll().show();
+            window.StoreServiceObj.map(function (k, y) {
+
+                console.log(k.name);
+                if (k.name == jQuery(service_category).val()) {
+
+                    /*
+                     * assign values ass service dropdown change
+                     * */
+                    var val_dedicated_page = k.dedicated_page,
+                        val_page_title = k.page_title,
+                        val_content_heading = k.content_heading,
+                        val_content = k.content,
+                        val_meta_keyword = k.meta_keyword,
+                        val_meta_data = k.meta_data,
+                        val_redirect_url = k.redirect_url ? k.redirect_url : '';
+
+
+                    dedicated_page.val(val_dedicated_page).attr("selected", "selected").change();
+//
+//                    if(typeof(val_dedicated_page) == 'undefined'){
+//                        dedicated_page.val(0).attr("selected", "selected").change();
+//                    }
+                    page_title.val(val_page_title);
+                    content.val(val_content);
+                    if(tinyMCE.activeEditor!=null && val_dedicated_page=='1'){
+                        tinyMCE.activeEditor.setContent(val_content);
+                    }
+                    content_heading.val(val_content_heading);
+                    meta_keyword.val(val_meta_keyword);
+                    meta_data.val(val_meta_data);
+                    redirect_url.val(val_redirect_url);
+
+                }
+
+            });
+
+
+        } else {
+
+            jQuery(this).closest('.admin__field').nextAll().hide();
+
+            if (jQuery('#redirect_url')) {
+                jQuery('#redirect_url').show();
+            }
+            dedicated_page.val(0).attr("selected", "selected").change();
+            page_title.val("");
+            content.val("");
+            content_heading.val("");
+            if(tinyMCE.activeEditor!=null){ tinyMCE.activeEditor.setContent(''); }
+            meta_keyword.val("");
+            meta_data.val("");
+            redirect_url.val("");
+
+        }
+
+
+    }).change();
+
+
+    body.on('change', '#page_title, #content_heading, #content, #meta_keyword, #meta_data, #redirect_url', function () {
+
+        StoreServiceObj.map(function (k, y) {
+            if (k.name == jQuery(service_category).val()) {
+                /*
+                 * assign values ass service dropdown change
+                 * */
+                k.dedicated_page = dedicated_page.val();
+                k.page_title = page_title.val();
+                k.content_heading = content_heading.val();
+                k.content = content.val();
+                k.meta_keyword = meta_keyword.val();
+                k.meta_data = meta_data.val();
+                k.redirect_url = redirect_url ? redirect_url.val() : '';
+            }
+        });
+
+    });
+
+    body.on('change', '#dedicated_page', function () {
+
+        if (this.value == '0') {
+            jQuery(this).closest('.admin__field').nextAll().hide();
+            if (jQuery('#redirect_url')) {
+                jQuery('#redirect_url').closest('.admin__field').show();
+                jQuery('#redirect_url').show();
+            }
+
+        } else {
+            jQuery(this).closest('.admin__field').nextAll().show();
+            if (jQuery('#redirect_url')) {
+                jQuery('#redirect_url').closest('.admin__field').hide();
+                jQuery('#redirect_url').hide();
+            }
+            jQuery('#page_title').val("");
+            jQuery('#content_heading').val("");
+            jQuery('#content').val("");
+            //tinyMCE.activeEditor.setContent('');
+            if(tinyMCE.activeEditor!=null){ tinyMCE.activeEditor.setContent(''); }
+            jQuery('#meta_keyword').val("");
+            jQuery('#meta_data').val("");
+        }
+
+    });
+
+</script>
+
